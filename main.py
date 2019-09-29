@@ -5,7 +5,7 @@ import flask
 import basic as basic
 import global_params as gp
 
-import get.check, get.client, get.group, get.item, get.price, get.store
+import get.check, get.client, get.group, get.item, get.price, get.prepay, get.store
 import post.barcode, post.check, post.group, post.item, post.prepay, post.price, post.store
 
 
@@ -102,6 +102,9 @@ def get_item(item_id):
 def post_prepay():
     return post.prepay.prepay()
 
+@app.route('/florapi/0.9/prepay_status=<int:prepay_id>&key=' + gp.key, methods=['GET'])
+def get_prepay_status():
+   return get.prepay.prepay_status()
 
 ##### ГРУППЫ #####
 @app.route('/florapi/0.9/groups&key=' + gp.key, methods=['GET'])

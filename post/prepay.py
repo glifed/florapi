@@ -11,6 +11,7 @@ def prepay():
 
     client = json["client"]
     items = json["items"]
+    delivery_address = json["delivery_to"]
 
     if (not "pricelist" in json) or \
        (not "station" in json) or \
@@ -22,6 +23,7 @@ def prepay():
         client_count = 0
         client_id = None
 
+        # Поиск клиента в базе
         if "id" not in client:
             client_count = 0
         else:
@@ -34,6 +36,8 @@ def prepay():
                           )
 
         if client_count == 0:
+            # Добавляем клиента если не находится
+
             insert = db.prepare(
                         "INSERT INTO root.client (name, phone, email, city, street, " +
                         "house, building, flat_office) " +
@@ -55,6 +59,8 @@ def prepay():
 
         items_accepted = []
 
+        comment = ""
+
         for item in items:
             if "id" not in item:
                 return gp.resp(400, {"errors": "Uncorrect value"})
@@ -67,9 +73,11 @@ def prepay():
                                     "p.pricelistid = " + str(json["pricelist"]) + " AND " +
                                     "s.stationid = " + str(json["station"]))
             if len(result) != 1:
-                return gp.resp(400, {"errors": "Uncorrect value"})
+                comment += "NoName " + item["store"] + "шт " + result[0]["price"] + " | "
+                continue
             if float(item["store"]) > result[0]["value"]:
-                return gp.resp(400, {"errors": "Uncorrect value"})
+                comment += "NoName " + item["store"] + "шт " + result[0]["price"] + " | "
+                continue
 
             items_accepted.append({
                               "itemid": result[0]["itemid"],
@@ -94,7 +102,6 @@ def prepay():
             int(client_id))
 
         for item in items_accepted:
-            print(float(item["store"]), file=open("/home/gyti/log", "a"))
             insert = db.prepare("SELECT public.calc_store_item($1, $2, $3, $4)")
             insert(int(item["itemid"]), int(item["globalid"]), float("{0:.3f}".format(float(item["store"]))), int(json["station"]))
 
@@ -110,13 +117,15 @@ def prepay():
                         "VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ")
 
         insert(
-            str(client["name"]) if "name" in client else "",
-            str(client["phone"]) if "phone" in client else "",
-            str(client["city"]) if "city" in client else "",
-            str(client["street"]) if "street" in client else "",
-            str(client["house"]) if "house" in client else "",
-            str(client["building"]) if "building" in client else "",
-            str(client["flat_office"]) if "flat_office" in client else "",
+            str(delivery_address["customer"]) if "customer" in client else "",
+            str(delivery_address["customerphone"]) if "customerphone" in client else "",
+            str(delivery_address["name"]) if "name" in client else "",
+            str(delivery_address["phone"]) if "phone" in client else "",
+            str(delivery_address["city"]) if "city" in client else "",
+            str(delivery_address["street"]) if "street" in client else "",
+            str(delivery_address["house"]) if "house" in client else "",
+            str(delivery_address["building"]) if "building" in client else "",
+            str(delivery_address["flat_office"]) if "flat_office" in client else "",
             prepay_id)
 
         insert = db.prepare("INSERT INTO root.prepaystatus(prepayid, paymentok, itemok, ready, send, received, cancell) " +
