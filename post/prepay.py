@@ -59,7 +59,7 @@ def prepay():
 
         items_accepted = []
 
-        comment = ""
+        comment = str(json["comment"]) if "comment" in json else ""
 
         for item in items:
             if "id" not in item:
@@ -73,10 +73,10 @@ def prepay():
                                     "p.pricelistid = " + str(json["pricelist"]) + " AND " +
                                     "s.stationid = " + str(json["station"]))
             if len(result) != 1:
-                comment += "NoName " + item["store"] + "шт " + result[0]["price"] + " | "
+                comment += "NoName " + item["store"] + "шт " + item["price"] + " | "
                 continue
             if float(item["store"]) > result[0]["value"]:
-                comment += "NoName " + item["store"] + "шт " + result[0]["price"] + " | "
+                comment += "NoName " + item["store"] + "шт " + item["price"] + " | "
                 continue
 
             items_accepted.append({
