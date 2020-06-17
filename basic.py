@@ -1,7 +1,6 @@
 import flask
 import json
 
-
 def price_validate():
     errors = []
     json = flask.request.get_json()
@@ -66,6 +65,7 @@ def barcode_validate():
     return (json, errors)
 
 
+
 def prepay_validate():
     errors = []
     json = flask.request.get_json()
@@ -84,12 +84,11 @@ def prepay_validate():
     return (json, errors)
 
 def to_json(data):
-    return json.dumps(data) + "\n"
-
+    return json.dumps(data, ensure_ascii=False) + "\n"
 
 def resp(code, data):
     return flask.Response(
         status=code,
         mimetype="application/json",
-        response=to_json(data)
+        response=to_json(data),
     )
