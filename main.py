@@ -3,16 +3,25 @@
 import flask
 
 import basic as basic
+import get.check
+import get.client
+import get.group
+import get.item
+import get.prepay
+import get.price
+import get.rtprepay
+import get.store
+import get.user
 import global_params as gp
-
-import get.check, get.client, get.group, get.item, get.price, get.prepay, get.store
-import post.barcode, post.check, post.group, post.item, post.prepay, post.price, post.store
-
+import post.barcode
+import post.check
+import post.group
+import post.item
+import post.prepay
+import post.price
+import post.store
 
 app = flask.Flask(__name__)
-
-# disables JSON pretty-printing in flask.jsonify
-# app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
 
 def affected_num_to_code(cnt):
@@ -105,6 +114,10 @@ def post_prepay():
 @app.route('/florapi/0.9/prepay_status=<int:prepay_id>&key=' + gp.key, methods=['GET'])
 def get_prepay_status():
    return get.prepay.prepay_status()
+
+@app.route('/florapi/0.9/rtprepays&key=' + gp.key, methods=['GET'])
+def get_rtprepays():
+   return get.rtprepay.rtprepays()
 
 ##### ГРУППЫ #####
 @app.route('/florapi/0.9/groups&key=' + gp.key, methods=['GET'])
