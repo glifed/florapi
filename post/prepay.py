@@ -1,5 +1,5 @@
 import datetime
-
+import postgresql
 import basic as basic
 import global_params as gp
 
@@ -19,7 +19,7 @@ def prepay():
        (not "date" in json):
         return basic.resp(400, {"errors": "Haven't value"})
 
-    with gp.db_conn() as db:
+    with postgresql.open(gp.dbconnect) as db:
         client_count = 0
         client_id = None
 
@@ -70,8 +70,8 @@ def prepay():
                               "INNER JOIN root.store s ON s.globalid = i.globalid " +
                               "INNER JOIN root.price p ON p.globalid = i.globalid " +
                               "WHERE i.itemid = " + str(item["id"]) + " AND " +
-                                    "p.pricelistid = " + str(json["pricelist"]) + " AND " +
-                                    "s.stationid = " + str(json["station"]))
+                              "p.pricelistid = " + str(json["pricelist"]) + " AND " +
+                              "s.stationid = " + str(json["station"]))
             if len(result) != 1:
                 comment += "NoName " + item["store"] + "шт " + item["price"] + " | "
                 continue
@@ -112,9 +112,9 @@ def prepay():
                    float(item["price"]) * float(item["store"]), float(item["realprice"]) * float(item["store"]), int(json["station"]), int(item["globalid"]))
 
         insert = db.prepare(
-                        "INSERT INTO root.prepayinfo (name, phone, city, street, house, " +
+                        "INSERT INTO root.prepayinfo (customer, customerphone, name, phone, city, street, house, " +
                                                  "building, flat_office, prepayid) " +
-                        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ")
+                        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ")
 
         insert(
             str(delivery_address["customer"]) if "customer" in client else "",
@@ -132,4 +132,4 @@ def prepay():
                             "VALUES($1, 0, 0, 0, 0, 0, 0)")
         insert(prepay_id)
 
-        return gp.resp(200, {"id": str(prepay_id), "client": str(client_id)})
+        return basic.resp(200, {"id": str(prepay_id), "client": str(client_id)})
