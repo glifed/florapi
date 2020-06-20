@@ -1,0 +1,16 @@
+###Предзаказ###
+POST /florapi/0.9/prepay&key=mysecretpersonalkey HTTP/1.1
+Host: localhost:5000
+Content-Type: application/json
+content-length: 352
+
+{
+ "pricelist": "1", 
+ "station": "1", 
+ "time": "10:10", 
+ "date": "2018-10-10", 
+ "client": {"name":"Петров", "street": "Цветочная", "phone": "+78887776655", "email": "flora@pos.ru", "city": "", "house": "33", "building": "11", "flat_office": "324"}, 
+ "items": [{"id": "16", "name": "Роза 50", "store": "5.0", "price": "111"}],
+ "delivery_to": { "customer": "Петров", "customerphone": "454545", "name":"Петрова", "phone": "+78887776655", "city": "", "street": "", "house": "33", "building": "11", "flat_office": "324"}
+}
+
