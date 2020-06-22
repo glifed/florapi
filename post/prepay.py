@@ -117,8 +117,8 @@ def prepay():
                         "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ")
 
         insert(
-            str(delivery_address["customer"]) if "customer" in client else "",
-            str(delivery_address["customerphone"]) if "customerphone" in client else "",
+            str(client["name"]) if "name" in client else "",
+            str(client["phone"]) if "phone" in client else "",
             str(delivery_address["name"]) if "name" in client else "",
             str(delivery_address["phone"]) if "phone" in client else "",
             str(delivery_address["city"]) if "city" in client else "",
